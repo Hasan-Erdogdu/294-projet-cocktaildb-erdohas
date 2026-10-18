@@ -1,27 +1,23 @@
-const BASE = 'https://apis.divtec.me/api/cocktails/'
+// stores/cocktailStore.js
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { fetchAll } from '@/stores/cocktailAPI.js'
 
-/**
- * Récupère tous les éléments d'une ressource paginée.
- * @param {number} pageLimit - Nombre de pages (total / 100, arrondi au-dessus)
- * @param {string} item - "cocktails" ou "ingredients"
- * @returns {Promise<Array>} Tous les éléments dans un seul tableau
- */
-async function fetchAll (pageLimit, item) {
-  const limit = 100 // max d'éléments par page autorisé par l'API
-  const res = []
-  for (let currentPage = 1; currentPage <= pageLimit; ++currentPage) {
-    // Pas d'await : les requêtes partent toutes en parallèle.
-    // .then() convertit chaque réponse en JSON.
-    res.push(fetch(`${BASE}${item}?page=${currentPage}&limit=${limit}`).then(response => response.json()))
+export const useCocktailStore = defineStore('cocktails', () => {
+  const cocktails = ref([])
+
+  async function loadCocktails () {
+    // fetch seulement si la liste est encore vide
+    if (cocktails.value.length === 0) {
+      cocktails.value = await fetchAll(5, 'cocktails')
+    }
   }
-  // Attend que toutes les pages soient arrivées
-  const promisedRes = await Promise.all(res)
 
-  // Fusionne les tableaux "data" de chaque page en un seul tableau
-  return promisedRes.flatMap(p => p.data)
-}
+  async function randomCocktail () {
+    await loadCocktails() // ne fetch que si la liste est vide
+    const list = cocktails.value
+    return list[Math.floor(Math.random() * list.length)]
+  }
 
-export async function searchByName (name) {
-  const res = await fetch(`${BASE}/cocktails?page=1&limit=100&name=cocktail`)
-  return await res.json()
-}
+  return { cocktails, loadCocktails, randomCocktail }
+})
