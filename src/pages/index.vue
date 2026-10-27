@@ -1,14 +1,14 @@
 <script setup>
-  import { onMounted, ref } from 'vue'
-
-  const cocktail = ref([])
+  import { useCocktailStore } from '@/stores/cocktailStore.js'
+  const useStore = useCocktailStore()
 
   onMounted(async () => {
-    const response = await fetch('https://apis.divtec.me/api/cocktails/cocktails')
-    const json = await response.json()
-    cocktail.value = json.data
+    await useStore.init()
   })
 </script>
 
 <template>
+  <div>
+    <p>Oui bonjour</p>
+  </div>
 </template>

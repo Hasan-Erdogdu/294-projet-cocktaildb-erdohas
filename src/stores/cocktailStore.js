@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+
 import axios from '@/plugins/axios.js'
 
 const api = axios.create({ baseURL: import.meta.env.VITE_API_URL })
@@ -14,17 +14,16 @@ export async function fetchAll (pageLimit, item) {
   const limit = 100 // max d'éléments par page autorisé par l'API
   const response = []
   for (let currentPage = 1; currentPage <= pageLimit; ++currentPage) {
-    // .then() convertit chaque réponse en JSON.
-    response.push((await api.get(`/${item}?page=${currentPage}&limit=${limit}`)).data)
+    response.push(api.get(`/${item}?page=${currentPage}&limit=${limit}`))
   }
   // Attend que toutes les pages soient arrivées
-  const pages = Promise.all(response).catch(console.error)
+  const pages = await Promise.all(response).catch(console.error)
 
   // Fusionne les tableaux "data" de chaque page en un seul tableau
-  return pages.flatMap(p => p.data)
+  return pages.flatMap(p => p.data.data)
 }
 
-export const useStore = defineStore('store', {
+export const useCocktailStore = defineStore('store', {
   state: () => ({
     cocktails: [],
     ingredients: [],
@@ -40,19 +39,30 @@ export const useStore = defineStore('store', {
     },
     searchByName (name) {
       return this.cocktails.filter((cocktail) =>
-        cocktail.toLowerCase().includes(name.value.toLowerCase()
+        cocktail.toLowerCase().includes(name.value.toLowerCase()),
       )
-    }
+    },
+    byIngredient (ingredient) {
+      return this.cocktails.filter((cocktail) =>
+        cocktail.includes(cocktail.ingredients.some(ingredient))
+      )
+    },
 
 
   },
   actions: {
+    async init () {
+      // charge cocktails et ingrédients en parallèle
+      await Promise.all([this.loadCocktails(), this.loadIngredients()])
+    },
     async loadCocktails () {
+      // vérifie si tous les cocktails on déjà été chargé
       if (this.cocktails.length < 441) {
         this.cocktails = await fetchAll(5, 'cocktails')
       }
     },
     async loadIngredients () {
+      // vérifie si tous les ingrédients on déjà été chargé
       if (this.ingredients.length < 310) {
         this.ingredients = await fetchAll(4, 'ingredients')
       }
