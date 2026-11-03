@@ -14,6 +14,8 @@ export const useCocktailStore = defineStore('store', {
   state: () => ({
     cocktails: [],
     ingredients: [],
+    alcohols: [],
+    mixers: [],
     randomCocktail: null,
     randomIngredients: [],
     isLoading: true,
@@ -33,6 +35,10 @@ export const useCocktailStore = defineStore('store', {
     alcohols: state => state.ingredients.filter(ingredient => {
       const name = ingredient.name.toLowerCase()
       return ALCOHOL_KEYWORDS.some(keyword => name.includes(keyword))
+    }),
+    mixers: state => state.ingredients.filter(ingredient => {
+      const name = ingredient.name.toLowerCase()
+      return !ALCOHOL_KEYWORDS.some(keyword => name.includes(keyword))
     }),
   },
   actions: {
