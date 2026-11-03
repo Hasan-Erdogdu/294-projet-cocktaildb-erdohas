@@ -1,7 +1,5 @@
 import { defineStore } from 'pinia'
-
-import axios from '@/plugins/axios.js'
-
+import api from '@/plugins/axios.js'
 
 export const useCocktailStore = defineStore('store', {
   state: () => ({
@@ -19,11 +17,6 @@ export const useCocktailStore = defineStore('store', {
     ingredientCount: state => {
       return state.ingredients.length
     },
-    /*
-    *
-    * METTRE CA DANS INDEX.VUE
-    *
-     */
     searchByName: state => name => {
       const drinkName = name.toLowerCase()
       return state.cocktails.filter(c => c.name.toLowerCase().includes(drinkName))
