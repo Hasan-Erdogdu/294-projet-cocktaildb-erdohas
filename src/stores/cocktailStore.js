@@ -97,8 +97,8 @@ export const useCocktailStore = defineStore('store', {
       // Obligatoire d'avoir un alcool
       const alcoholIndex = Math.floor(Math.random() * this.alcohols.length)
       this.randomIngredients.push(this.alcohols[alcoholIndex])
-      // Entre 2 et 10 ingrédients
-      const howManyIngredients = Math.floor(Math.random() * 9 + 2)
+      // Entre 2 et 8 ingrédients
+      const howManyIngredients = Math.floor(Math.random() * 7 + 2)
       for (let i = 0; i < howManyIngredients; i++) {
         const index = Math.floor(Math.random() * this.ingredients.length)
         this.randomIngredients.push(this.ingredients[index])
