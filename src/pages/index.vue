@@ -21,4 +21,5 @@
   <ul>
     <li v-for="c in results" :key="c.id">{{ c.name }}</li>
   </ul>
+  <v-btn variant="text" @click="store.pickRandomCocktail()">COCKTAIL ALEATOIRE</v-btn>
 </template>
