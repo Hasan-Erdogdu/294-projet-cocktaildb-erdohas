@@ -86,7 +86,7 @@ const OVERRIDES = {
  */
 function hasWord (name, keyword) {
   // Échappe les caractères spéciaux (le « . » de « dr. pepper » par ex.)
-  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
   return new RegExp(`\\b${escaped}\\b`).test(name)
 }
 

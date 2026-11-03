@@ -1,14 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '@/plugins/axios.js'
-
-// Mots-clés pour reconnaître un alcool dans le nom d'un ingrédient
-const ALCOHOL_KEYWORDS = [
-  'vodka', 'gin', 'rum', 'tequila', 'whisk', 'bourbon', 'scotch',
-  'brandy', 'cognac', 'liqueur', 'schnapps', 'vermouth', 'wine',
-  'champagne', 'prosecco', 'beer', 'cider', 'sake', 'absinthe',
-  'mezcal', 'pisco', 'cachaca', 'campari', 'aperol', 'amaretto',
-  'kahlua', 'baileys', 'triple sec', 'cointreau', 'grand marnier', 'port', 'sherry',
-]
+import { ingredientCategories } from '@/utils/ingredientCategories.js'
 
 export const useCocktailStore = defineStore('store', {
   state: () => ({
@@ -32,13 +24,9 @@ export const useCocktailStore = defineStore('store', {
       const drinkName = name.toLowerCase()
       return state.cocktails.filter(c => c.name.toLowerCase().includes(drinkName))
     },
-    alcohols: state => state.ingredients.filter(ingredient => {
+    categories: (state, ingredientCategories) => state.ingredients.filter(ingredient => {
       const name = ingredient.name.toLowerCase()
-      return ALCOHOL_KEYWORDS.some(keyword => name.includes(keyword))
-    }),
-    mixers: state => state.ingredients.filter(ingredient => {
-      const name = ingredient.name.toLowerCase()
-      return !ALCOHOL_KEYWORDS.some(keyword => name.includes(keyword))
+      return ingredientCategories.some(keyword => name.includes(keyword))
     }),
   },
   actions: {
