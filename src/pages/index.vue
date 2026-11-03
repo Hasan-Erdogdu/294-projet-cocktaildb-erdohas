@@ -1,31 +1,9 @@
 <script setup>
-  import { useCocktailStore } from '@/stores/cocktailStore.js'
-
-  const store = useCocktailStore()
-  const searchTerm = ref('') // ce que l'utilisateur tape
-
-  // Se recalcule à chaque frappe
-  const results = computed(() => store.searchByName(searchTerm.value || ''))
+  import { store } from '@/stores/cocktailStore.js'
+  console.log(store.ingredientCount())
 </script>
 
 <template>
-  <v-text-field
-    v-model="searchTerm"
-    clearable
-    label="Rechercher un cocktail"
-    prepend-inner-icon="mdi-magnify"
-  />
-
-  <p>{{ results.length }} cocktail(s)</p>
-
-  <ul>
-    <li v-for="c in results" :key="c.id">{{ c.name }}</li>
-  </ul>
-  <v-btn variant="text" @click="store.pickRandomCocktail()">COCKTAIL ALEATOIRE</v-btn>
-  <p v-if="store.randomCocktail">{{ store.randomCocktail.name }}</p>
-
-  <v-btn variant="text" @click="store.pickRandomIngredients()">INGREDIENTS ALEATOIRE</v-btn>
-  <ul v-if="store.randomIngredients.length > 0">
-    <li v-for="(ingredient, i) in store.randomIngredients" :key="i">{{ ingredient.name }}</li>
-  </ul>
 </template>
+<style>
+</style>
