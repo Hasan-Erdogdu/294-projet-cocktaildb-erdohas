@@ -1,6 +1,15 @@
 import { defineStore } from 'pinia'
 import api from '@/plugins/axios.js'
 
+// Mots-clés pour reconnaître un alcool dans le nom d'un ingrédient
+const ALCOHOL_KEYWORDS = [
+  'vodka', 'gin', 'rum', 'tequila', 'whisk', 'bourbon', 'scotch',
+  'brandy', 'cognac', 'liqueur', 'schnapps', 'vermouth', 'wine',
+  'champagne', 'prosecco', 'beer', 'cider', 'sake', 'absinthe',
+  'mezcal', 'pisco', 'cachaca', 'campari', 'aperol', 'amaretto',
+  'kahlua', 'baileys', 'triple sec', 'cointreau', 'grand marnier', 'port', 'sherry',
+]
+
 export const useCocktailStore = defineStore('store', {
   state: () => ({
     cocktails: [],
@@ -21,6 +30,10 @@ export const useCocktailStore = defineStore('store', {
       const drinkName = name.toLowerCase()
       return state.cocktails.filter(c => c.name.toLowerCase().includes(drinkName))
     },
+    alcohols: state => state.ingredients.filter(ingredient => {
+      const name = ingredient.name.toLowerCase()
+      return ALCOHOL_KEYWORDS.some(keyword => name.includes(keyword))
+    }),
   },
   actions: {
     /**
@@ -81,6 +94,9 @@ export const useCocktailStore = defineStore('store', {
         return
       }
       this.randomIngredients = [] // repart d'une liste vide à chaque tirage
+      // Obligatoire d'avoir un alcool
+      const alcoholIndex = Math.floor(Math.random() * this.alcohols.length)
+      this.randomIngredients.push(this.alcohols[alcoholIndex])
       // Entre 2 et 10 ingrédients
       const howManyIngredients = Math.floor(Math.random() * 9 + 2)
       for (let i = 0; i < howManyIngredients; i++) {
