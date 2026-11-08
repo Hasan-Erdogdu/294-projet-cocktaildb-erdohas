@@ -6,7 +6,6 @@
  * Ex. « Lime vodka » contient « lime » et « vodka » → les alcools forts
  * sont testés en premier, donc il y va.
  */
-
 // Les catégories, dans l'ordre où elles sont testées
 export const CATEGORIES = [
   {

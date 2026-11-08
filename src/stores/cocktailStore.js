@@ -1,13 +1,11 @@
 import { defineStore } from 'pinia'
 import api from '@/plugins/axios.js'
-import { ingredientCategories } from '@/utils/ingredientCategories.js'
+import { CATEGORIES, categoryOf } from '@/utils/ingredientCategories.js'
 
 export const useCocktailStore = defineStore('store', {
   state: () => ({
     cocktails: [],
     ingredients: [],
-    alcohols: [],
-    mixers: [],
     randomCocktail: null,
     randomIngredients: [],
     isLoading: true,
@@ -24,10 +22,41 @@ export const useCocktailStore = defineStore('store', {
       const drinkName = name.toLowerCase()
       return state.cocktails.filter(c => c.name.toLowerCase().includes(drinkName))
     },
-    categories: (state, ingredientCategories) => state.ingredients.filter(ingredient => {
-      const name = ingredient.name.toLowerCase()
-      return ingredientCategories.some(keyword => name.includes(keyword))
-    }),
+    /**
+     * Regroupe tous les ingrédients par catégorie (pour la page « Vider le frigo »).
+     * @param {Object} state - L'état du store
+     * @returns {Object<string, Array>} Un objet avec une liste par catégorie :
+     *   { spirits, liqueurs, softs, fruits, kitchen, others }
+     */
+    ingredientsByCategory: state => {
+      const groups = { others: [] }
+      for (const category of CATEGORIES) {
+        groups[category.id] = []
+      }
+      for (const ingredient of state.ingredients) {
+        groups[categoryOf(ingredient.name)].push(ingredient)
+      }
+      return groups
+    },
+
+    /**
+     * Les ingrédients qui contiennent de l'alcool
+     * (alcools forts + liqueurs, vins et bières).
+     * @param {Object} state - L'état du store
+     * @returns {Array} Les ingrédients alcoolisés
+     */
+    alcohols: state => state.ingredients.filter(ingredient =>
+      ['spirits', 'liqueurs'].includes(categoryOf(ingredient.name)),
+    ),
+
+    /**
+     * Les ingrédients sans alcool (softs, fruits, herbes, épices…).
+     * @param {Object} state - L'état du store
+     * @returns {Array} Les ingrédients non alcoolisés
+     */
+    mixers: state => state.ingredients.filter(ingredient =>
+      !['spirits', 'liqueurs'].includes(categoryOf(ingredient.name)),
+    ),
   },
   actions: {
     /**
@@ -67,7 +96,7 @@ export const useCocktailStore = defineStore('store', {
       }
     },
     async loadIngredients () {
-      // vérifie si tous les ingrédients on déjà été chargé
+      // vérifie si tous les ingrédients ont déjà été chargés
       if (this.ingredients.length === 0) {
         this.ingredients = await this.fetchAll(4, 'ingredients')
       }
@@ -83,7 +112,7 @@ export const useCocktailStore = defineStore('store', {
     },
 
     async pickRandomIngredients () {
-      if (this.ingredients.length === 0) {
+      if (this.ingredients.length === 0 || this.alcohols.length === 0) {
         this.error = 'Les ingrédients ne sont pas chargés.'
         return
       }
@@ -91,9 +120,9 @@ export const useCocktailStore = defineStore('store', {
       // Obligatoire d'avoir un alcool
       const alcoholIndex = Math.floor(Math.random() * this.alcohols.length)
       this.randomIngredients.push(this.alcohols[alcoholIndex])
-      // Entre 2 et 8 ingrédients
+      // Entre 2 et 8 ingrédients au total (l'alcool compte comme le 1er)
       const howManyIngredients = Math.floor(Math.random() * 7 + 2)
-      for (let i = 0; i < howManyIngredients; i++) {
+      for (let i = 1; i < howManyIngredients; i++) {
         const index = Math.floor(Math.random() * this.ingredients.length)
         this.randomIngredients.push(this.ingredients[index])
       }
