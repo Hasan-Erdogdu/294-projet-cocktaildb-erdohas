@@ -1,5 +1,7 @@
 <script setup>
-  import { store } from '@/stores/cocktailStore.js'
+  import { useCocktailStore } from "@/stores/cocktailStore.js";
+
+  const store = useCocktailStore()
 </script>
 
 <template>
