@@ -22,9 +22,3 @@
     list-style-type: none;
   }
 </style>
-
-<div class="container">
-<ul v-if="store.randomIngredients.length > 0">
-  <li v-for="(ingredient, i) in store.randomIngredients" :key="i">{{ ingredient.name }}</li>
-</ul>
-</div>
