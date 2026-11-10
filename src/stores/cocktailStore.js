@@ -10,6 +10,7 @@ export const useCocktailStore = defineStore('store', {
     randomIngredients: [],
     isLoading: true,
     error: null,
+    favoriteIds: [],
   }),
   getters: {
     cocktailCount: state => {
@@ -67,6 +68,10 @@ export const useCocktailStore = defineStore('store', {
     mixers: state => state.ingredients.filter(ingredient =>
       !['spirits', 'liqueurs'].includes(categoryOf(ingredient.name)),
     ),
+    isFavorite: state => cocktailId => state.favoriteIds.includes(cocktailId),
+    favoriteCocktails: state => state.cocktails.filter(cocktail =>
+      state.favoriteIds.includes(cocktail.id),
+    ),
   },
   actions: {
     /**
@@ -90,6 +95,7 @@ export const useCocktailStore = defineStore('store', {
     async init () {
       this.isLoading = true
       this.error = null
+      this.loadFavorites()
 
       try {
         await Promise.all([this.loadCocktails(), this.loadIngredients()])
@@ -109,6 +115,15 @@ export const useCocktailStore = defineStore('store', {
       // vérifie si tous les ingrédients ont déjà été chargés
       if (this.ingredients.length === 0) {
         this.ingredients = await this.fetchAll(4, 'ingredients')
+      }
+    },
+    async loadFavorites () {
+      try {
+        const savedText = localStorage.getItem('favoriteIds')
+        this.favoriteIds = savedText ? JSON.parse(savedText) : []
+      } catch (error) {
+        console.error('Impossible de lire les favoris', error)
+        this.favoriteIds = []
       }
     },
     async pickRandomCocktail () {
@@ -135,6 +150,19 @@ export const useCocktailStore = defineStore('store', {
       for (let i = 1; i < howManyIngredients; i++) {
         const index = Math.floor(Math.random() * this.ingredients.length)
         this.randomIngredients.push(this.ingredients[index])
+      }
+    },
+    aoggleFavorite (cocktailId) {
+      if (this.favoriteIds.includes(cocktailId)) {
+        this.favoriteIds = this.favoriteIds.filter(favoriteId => favoriteId !== cocktailId)
+      } else {
+        this.favoriteIds.push(cocktailId)
+      }
+
+      try {
+        localStorage.setItem('favoriteIds', JSON.stringify(this.favoriteIds))
+      } catch (error) {
+        console.error('Impossible de sauvegarder les favoris', error)
       }
     },
   },
