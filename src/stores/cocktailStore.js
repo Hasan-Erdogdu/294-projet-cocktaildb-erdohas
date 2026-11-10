@@ -13,16 +13,20 @@ export const useCocktailStore = defineStore('store', {
     favoriteIds: [],
   }),
   getters: {
-    cocktailCount: state => {
-      return state.cocktails.length
-    },
-    ingredientCount: state => {
-      return state.ingredients.length
-    },
+    /**
+     * Cherche les cocktails dont le nom contient le texte tapé (sans tenir compte des majuscules).
+     * @param {Object} state - L'état du store
+     * @returns {function(string): Array} Une fonction qui prend le texte et renvoie les cocktails trouvés
+     */
     searchByName: state => name => {
       const drinkName = name.toLowerCase()
-      return state.cocktails.filter(c => c.name.toLowerCase().includes(drinkName))
+      return state.cocktails.filter(cocktail => cocktail.name.toLowerCase().includes(drinkName))
     },
+    /**
+     * Cherche les cocktails qui contiennent TOUS les ingrédients choisis.
+     * @param {Object} state - L'état du store
+     * @returns {function(string[]): Array} Une fonction qui prend les noms choisis et renvoie les cocktails
+     */
     searchByIngredients: state => selectedNames => {
       // Les noms choisis, en minuscules pour ignorer les majuscules
       const wantedNames = selectedNames.map(name => name.toLowerCase())
@@ -61,14 +65,16 @@ export const useCocktailStore = defineStore('store', {
     ),
 
     /**
-     * Les ingrédients sans alcool (softs, fruits, herbes, épices…).
+     * Vérifie si un cocktail est dans les favoris.
      * @param {Object} state - L'état du store
-     * @returns {Array} Les ingrédients non alcoolisés
+     * @returns {function(*): boolean} Une fonction qui prend l'id du cocktail
      */
-    mixers: state => state.ingredients.filter(ingredient =>
-      !['spirits', 'liqueurs'].includes(categoryOf(ingredient.name)),
-    ),
     isFavorite: state => cocktailId => state.favoriteIds.includes(cocktailId),
+    /**
+     * La liste des cocktails favoris.
+     * @param {Object} state - L'état du store
+     * @returns {Array} Les cocktails dont l'id est dans favoriteIds
+     */
     favoriteCocktails: state => state.cocktails.filter(cocktail =>
       state.favoriteIds.includes(cocktail.id),
     ),
@@ -90,8 +96,13 @@ export const useCocktailStore = defineStore('store', {
       const pages = await Promise.all(response)
 
       // Fusionne les tableaux "data" de chaque page en un seul tableau
-      return pages.flatMap(p => p.data.data)
+      return pages.flatMap(page => page.data.data)
     },
+    /**
+     * Lance le chargement au démarrage du site : favoris, cocktails et ingrédients.
+     * isLoading repasse à false à la fin, même en cas d'erreur.
+     * @returns {Promise<void>}
+     */
     async init () {
       this.isLoading = true
       this.error = null
@@ -105,28 +116,42 @@ export const useCocktailStore = defineStore('store', {
         this.isLoading = false
       }
     },
+    /**
+     * Charge les cocktails, seulement si la liste est encore vide.
+     * @returns {Promise<void>}
+     */
     async loadCocktails () {
-      // vérifie si tous les cocktails ont déjà été chargés
       if (this.cocktails.length === 0) {
         this.cocktails = await this.fetchAll(5, 'cocktails')
       }
     },
+    /**
+     * Charge les ingrédients, seulement si la liste est encore vide.
+     * @returns {Promise<void>}
+     */
     async loadIngredients () {
-      // vérifie si tous les ingrédients ont déjà été chargés
       if (this.ingredients.length === 0) {
         this.ingredients = await this.fetchAll(4, 'ingredients')
       }
     },
-    async loadFavorites () {
+    /**
+     * Lit les favoris sauvegardés dans le localStorage du navigateur.
+     */
+    loadFavorites () {
       try {
         const savedText = localStorage.getItem('favoriteIds')
-        this.favoriteIds = savedText ? JSON.parse(savedText) : []
+        const savedIds = savedText ? JSON.parse(savedText) : []
+        // Si ce qui est sauvegardé n'est pas une liste, on repart de zéro
+        this.favoriteIds = Array.isArray(savedIds) ? savedIds : []
       } catch (error) {
         console.error('Impossible de lire les favoris', error)
         this.favoriteIds = []
       }
     },
-    async pickRandomCocktail () {
+    /**
+     * Choisit un cocktail au hasard et le met dans randomCocktail.
+     */
+    pickRandomCocktail () {
       // Liste vide -> message d'erreur et on s'arrête
       if (this.cocktails.length === 0) {
         this.error = 'Les cocktails ne sont pas chargés.'
@@ -136,22 +161,35 @@ export const useCocktailStore = defineStore('store', {
       this.randomCocktail = this.cocktails[index]
     },
 
-    async pickRandomIngredients () {
+    /**
+     * Crée une liste aléatoire d'ingrédients dans randomIngredients :
+     * 1 alcool obligatoire, puis entre 2 et 8 ingrédients au total, sans doublon.
+     */
+    pickRandomIngredients () {
       if (this.ingredients.length === 0 || this.alcohols.length === 0) {
         this.error = 'Les ingrédients ne sont pas chargés.'
         return
       }
-      this.randomIngredients = [] // repart d'une liste vide à chaque tirage
-      // Obligatoire d'avoir un alcool
+      // Obligatoire d'avoir un alcool : il est toujours le 1er de la liste
       const alcoholIndex = Math.floor(Math.random() * this.alcohols.length)
-      this.randomIngredients.push(this.alcohols[alcoholIndex])
+      const pickedIngredients = [this.alcohols[alcoholIndex]]
       // Entre 2 et 8 ingrédients au total (l'alcool compte comme le 1er)
       const howManyIngredients = Math.floor(Math.random() * 7 + 2)
-      for (let i = 1; i < howManyIngredients; i++) {
+      while (pickedIngredients.length < howManyIngredients) {
         const index = Math.floor(Math.random() * this.ingredients.length)
-        this.randomIngredients.push(this.ingredients[index])
+        const candidate = this.ingredients[index]
+        // On ne garde pas deux fois le même ingrédient
+        if (!pickedIngredients.includes(candidate)) {
+          pickedIngredients.push(candidate)
+        }
       }
+      this.randomIngredients = pickedIngredients
     },
+    /**
+     * Ajoute le cocktail aux favoris s'il n'y est pas, sinon le retire,
+     * puis sauvegarde la liste dans le localStorage.
+     * @param {*} cocktailId - L'id du cocktail
+     */
     toggleFavorite (cocktailId) {
       if (this.favoriteIds.includes(cocktailId)) {
         this.favoriteIds = this.favoriteIds.filter(favoriteId => favoriteId !== cocktailId)

@@ -15,5 +15,13 @@ import 'vuetify/styles'
 export default createVuetify({
   theme: {
     defaultTheme: 'dark',
+    themes: {
+      dark: {
+        colors: {
+          // Couleur principale du site (boutons, chips, spinner) : ambre « whisky »
+          primary: '#F2A93B',
+        },
+      },
+    },
   },
 })

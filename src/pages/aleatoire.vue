@@ -40,9 +40,11 @@
     </v-btn>
 
     <div v-if="store.randomIngredients.length > 0" class="random-ingredients">
+      <!-- Le 1er ingrédient est l'alcool garanti : il est coloré -->
       <v-chip
         v-for="(ingredient, index) in store.randomIngredients"
-        :key="index"
+        :key="ingredient.name"
+        :color="index === 0 ? 'primary' : undefined"
       >
         {{ ingredient.name }}
       </v-chip>

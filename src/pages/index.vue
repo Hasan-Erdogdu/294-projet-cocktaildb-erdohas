@@ -1,4 +1,4 @@
-  <script setup>
+<script setup>
   import { useCocktailStore } from '@/stores/cocktailStore.js'
   const store = useCocktailStore()
   // Ce que l'utilisateur tape dans la recherche

@@ -1,4 +1,6 @@
 <script setup>
+  import { API_BASE_URL } from '@/plugins/axios.js'
+
   // Le cocktail à afficher, donné par le parent
   defineProps({
     cocktail: {
@@ -8,10 +10,10 @@
   })
   // Prévient le parent quand on clique sur « Fermer »
   defineEmits(['close'])
-  const IMAGE_BASE_URL = import.meta.env.VITE_API_URL
+
   // Renvoie l'adresse complète d'une image à partir de son chemin
   function getImageUrl (imagePath) {
-    return IMAGE_BASE_URL + imagePath
+    return API_BASE_URL + imagePath
   }
 </script>
 
@@ -25,11 +27,11 @@
 
         <v-card-text>
           <h3>Ingrédients</h3>
-          <!-- ingredients[index] va avec measures[index] -->
           <ul class="ingredient-list">
+            <!-- La mesure n°index va avec l'ingrédient n°index -->
             <li
               v-for="(ingredientName, index) in cocktail.ingredients"
-              :key="ingredientName"
+              :key="index"
             >
               {{ cocktail.measures[index] }} {{ ingredientName }}
             </li>
@@ -68,7 +70,7 @@
 }
 
 .cocktail-info {
-  flex: 1;        /* prend la place restante */
+  flex: 1;
   min-width: 0;
 }
 
@@ -93,6 +95,14 @@
     width: 100%;
     max-width: 340px;
     margin: 0 auto;
+  }
+}
+
+/* Tablette : l'image reste à droite, mais plus petite */
+@media (min-width: 701px) and (max-width: 960px) {
+  .cocktail-image {
+    flex: none;
+    width: 240px;
   }
 }
 </style>

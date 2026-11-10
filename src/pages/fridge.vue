@@ -27,6 +27,8 @@
 </script>
 
 <template>
+  <h1 class="text-h3 text-center my-6">Vider le frigo</h1>
+
   <div class="fridge-layout">
     <!-- Colonne de gauche : les ingrédients à choisir -->
     <div class="fridge-selection">
@@ -62,6 +64,7 @@
       </div>
     </div>
 
+    <!-- Colonne de droite : les ingrédients choisis et les cocktails trouvés -->
     <aside class="fridge-results">
       <div v-if="selected.length > 0" class="selection">
         <v-chip

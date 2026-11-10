@@ -14,9 +14,6 @@
   </v-footer>
 </template>
 
-<script setup>
-</script>
-
 <style scoped>
 .footer {
   display: flex;
@@ -27,12 +24,13 @@
   padding: 20px 32px;
   font-size: 0.875rem;
   line-height: 1.4;
-  border-top: 2px solid #f2a93b;
+  /* rgb(var(--v-theme-primary)) = la couleur « primary » du thème Vuetify */
+  border-top: 2px solid rgb(var(--v-theme-primary));
 }
 
 /* Le lien vers Addiction Suisse */
 .footer-link {
-  color: #f2a93b;
+  color: rgb(var(--v-theme-primary));
   font-weight: 500;
   text-decoration: none;
   transition: color 0.2s;

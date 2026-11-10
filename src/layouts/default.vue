@@ -5,7 +5,7 @@
 </script>
 
 <template>
-  <app-header />
+  <AppHeader />
   <v-main>
     <!-- 1. Chargement des données -->
     <v-container>
