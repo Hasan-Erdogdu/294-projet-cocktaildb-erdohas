@@ -43,6 +43,7 @@
       <v-btn to="/" variant="text">Accueil</v-btn>
       <v-btn to="/fridge" variant="text">Vider le frigo</v-btn>
       <v-btn to="/aleatoire" variant="text">Aléatoire</v-btn>
+      <v-btn to="/favoris" variant="text">Favoris</v-btn>
       <v-btn aria-label="Rechercher" icon="mdi-magnify" @click="showSearch = true" />
     </template>
   </v-app-bar>

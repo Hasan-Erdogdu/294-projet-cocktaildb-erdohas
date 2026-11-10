@@ -152,7 +152,7 @@ export const useCocktailStore = defineStore('store', {
         this.randomIngredients.push(this.ingredients[index])
       }
     },
-    aoggleFavorite (cocktailId) {
+    toggleFavorite (cocktailId) {
       if (this.favoriteIds.includes(cocktailId)) {
         this.favoriteIds = this.favoriteIds.filter(favoriteId => favoriteId !== cocktailId)
       } else {
