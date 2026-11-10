@@ -1,17 +1,4 @@
 <script setup>
-  import { useCocktailStore } from '@/stores/cocktailStore.js'
-  const store = useCocktailStore()
-  const router = useRouter()
-  const showSearch = ref(false)
-  const searchTerm = ref('') // ce que l'utilisateur tape
-  function goToSearch () {
-    const term = searchTerm.value.trim()
-    if (term === '') {
-      return
-    }
-    router.push(`/search?term=${term}`)
-    showSearch.value = false
-  }
 </script>
 
 <template>
