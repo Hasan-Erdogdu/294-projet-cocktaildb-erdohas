@@ -12,7 +12,7 @@
 </script>
 
 <template>
-  <v-card hover>
+  <v-card hover width="200">
     <v-img
       :alt="cocktail.name"
       cover
@@ -20,6 +20,12 @@
       :src="getImageUrl('../..' + cocktail.image)"
     />
     <v-card-title>{{ cocktail.name }}</v-card-title>
-    <v-card-subtitle>{{ cocktail.category }} · {{ cocktail.glass }}</v-card-subtitle>
+    <v-card-subtitle class="pb-3">{{ cocktail.category }} · {{ cocktail.glass }}</v-card-subtitle>
   </v-card>
 </template>
+
+<style scoped>
+.v-img {
+  aspect-ratio: 1;
+}
+</style>

@@ -8,12 +8,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AlcoholCard: typeof import('./src/components/AlcoholCard.vue')['default']
     AppFooter: typeof import('./src/components/AppFooter.vue')['default']
     AppHeader: typeof import('./src/components/AppHeader.vue')['default']
     AppSearchBar: typeof import('./src/components/AppSearchBar.vue')['default']
+    CocktailCard: typeof import('./src/components/CocktailCard.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     RandomIngredients: typeof import('./src/components/RandomIngredients.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SmallCocktailCard: typeof import('./src/components/SmallCocktailCard.vue')['default']
   }
 }
