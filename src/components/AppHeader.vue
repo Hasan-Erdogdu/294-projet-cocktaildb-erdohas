@@ -1,11 +1,9 @@
 <script setup>
   import { useCocktailStore } from '@/stores/cocktailStore.js'
-
   const store = useCocktailStore()
   const router = useRouter()
   const showSearch = ref(false)
   const searchTerm = ref('') // ce que l'utilisateur tape
-
   function goToSearch () {
     const term = searchTerm.value.trim()
     if (term === '') {
@@ -14,50 +12,35 @@
     router.push(`/search?term=${term}`)
     showSearch.value = false
   }
-
 </script>
 
 <template>
   <v-app-bar>
-    <!-- Mode recherche : le champ remplace tout le reste -->
-    <template v-if="showSearch">
-      <v-icon class="ml-4" icon="mdi-magnify" />
-      <input
-        v-model="searchTerm"
-        autofocus
-        class="search-input"
-        placeholder="Retrouver vos cocktails..."
-        type="text"
-        @keyup.enter="goToSearch"
-        @keyup.esc="showSearch = false"
-      >
-      <v-btn aria-label="Fermer la recherche" icon="mdi-close" @click="showSearch = false" />
-    </template>
+    <!-- Le logo, qui ramène à l'accueil -->
+    <v-app-bar-title>
+      <RouterLink class="logo" to="/">
+        <img alt="Cocktails – accueil" class="logo-image" src="@/img/Cocktail_Text-removebg-preview.png">
+      </RouterLink>
+    </v-app-bar-title>
 
-    <!-- Mode normal : le header habituel -->
-    <template v-else>
-      <v-app-bar-title>
-        <RouterLink class="logo" to="/">Cocktails</RouterLink>
-      </v-app-bar-title>
-      <v-spacer />
-      <v-btn to="/" variant="text">Accueil</v-btn>
-      <v-btn to="/fridge" variant="text">Vider le frigo</v-btn>
-      <v-btn to="/aleatoire" variant="text">Aléatoire</v-btn>
-      <v-btn to="/favoris" variant="text">Favoris</v-btn>
-      <v-btn aria-label="Rechercher" icon="mdi-magnify" @click="showSearch = true" />
-    </template>
+    <v-spacer />
+
+    <!-- Les liens vers les pages -->
+    <v-btn to="/" variant="text">Accueil</v-btn>
+    <v-btn to="/fridge" variant="text">Vider le frigo</v-btn>
+    <v-btn to="/aleatoire" variant="text">Aléatoire</v-btn>
+    <v-btn to="/favoris" variant="text">Favoris</v-btn>
   </v-app-bar>
 </template>
 
 <style scoped>
-.search-input {
-  flex: 1;
-  margin: 0 12px;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: inherit;
-  font-size: 1.1rem;
+.logo {
+  display: inline-flex;
+  align-items: center;
 }
 
+.logo-image {
+  height: 40px; /* la barre fait 64px de haut */
+  width: auto;  /* garde les proportions */
+}
 </style>
