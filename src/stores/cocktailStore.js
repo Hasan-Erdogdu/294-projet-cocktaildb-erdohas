@@ -22,6 +22,16 @@ export const useCocktailStore = defineStore('store', {
       const drinkName = name.toLowerCase()
       return state.cocktails.filter(c => c.name.toLowerCase().includes(drinkName))
     },
+    searchByIngredients: state => selectedNames => {
+      // Les noms choisis, en minuscules pour ignorer les majuscules
+      const wantedNames = selectedNames.map(name => name.toLowerCase())
+      return state.cocktails.filter(cocktail => {
+        // Les ingrédients de ce cocktail, en minuscules aussi
+        const cocktailNames = new Set(cocktail.ingredients.map(name => name.toLowerCase()))
+        // Gardé seulement s'il contient chaque ingrédient choisi
+        return wantedNames.every(name => cocktailNames.has(name))
+      })
+    },
     /**
      * Regroupe tous les ingrédients par catégorie (pour la page « Vider le frigo »).
      * @param {Object} state - L'état du store

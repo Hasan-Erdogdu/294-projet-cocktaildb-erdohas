@@ -13,6 +13,9 @@
     kitchen: 10,
   })
   const selected = ref([])
+  const results = computed(() =>
+    selected.value.length === 0 ? [] : store.searchByIngredients(selected.value),
+  )
 
   // Les ingrédients affichés d'une catégorie (coupés selon son compteur)
   function visibleIngredients (categoryId) {
@@ -54,6 +57,25 @@
     >
       Voir plus !
     </v-btn>
+  </div>
+  <!-- Cas 1 : rien de choisi -->
+  <p v-if="selected.length === 0">
+    Choisis des ingrédients pour voir les cocktails.
+  </p>
+
+  <!-- Cas 2 : choisi, mais aucun cocktail -->
+  <p v-else-if="results.length === 0">
+    Aucun cocktail ne contient tous ces ingrédients.
+  </p>
+
+  <!-- Cas 3 : il y a des résultats -->
+  <div v-else>
+    <p>{{ results.length }} cocktail(s)</p>
+    <div class="results">
+      <v-card v-for="cocktail in results" :key="cocktail.id">
+        <v-card-title>{{ cocktail.name }}</v-card-title>
+      </v-card>
+    </div>
   </div>
 </template>
 
